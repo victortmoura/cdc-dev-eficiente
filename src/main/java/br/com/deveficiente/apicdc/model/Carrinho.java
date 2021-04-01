@@ -1,20 +1,47 @@
 package br.com.deveficiente.apicdc.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Optional;
+import java.util.Set;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.deveficiente.apicdc.controller.LivroCarrinhoDTO;
 
 public class Carrinho {
 
-	private List<LivroCarrinhoDTO> livros = new ArrayList<>();
+	private Set<LivroCarrinhoDTO> livros = new LinkedHashSet<>();
 
+	@Deprecated
+	public Carrinho() {
+	}
+	
 	public void adiciona(Livro livro) {
-		livros.add(new LivroCarrinhoDTO(livro));
+		LivroCarrinhoDTO novoLivro = new LivroCarrinhoDTO(livro);
+		boolean result = livros.add(novoLivro);
+		if(!result) {
+			LivroCarrinhoDTO livroCarrinhoDTO = livros.stream().filter(novoLivro::equals).findFirst().get();
+			livroCarrinhoDTO.incrementar();
+		}
 	}
 
-	public List<LivroCarrinhoDTO> getLivros() {
+	public Set<LivroCarrinhoDTO> getLivros() {
 		return livros;
+	}
+	
+	/**
+	 * @param jsonCarrinho possível json de um carrinho já criado
+	 * @return Carrinho
+	 * */
+	public static Carrinho cria(Optional<String> jsonCarrinho) {
+		return jsonCarrinho.map(json -> {
+			try {
+				return new ObjectMapper().readValue(json, Carrinho.class);
+			} catch (JsonProcessingException e) {
+				throw new RuntimeException(e);
+			}
+		}).orElse(new Carrinho());
 	}
 	
 	@Override
