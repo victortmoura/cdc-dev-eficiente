@@ -20,6 +20,7 @@ public class Cookies {
 		try {
 			Cookie cookie = new Cookie(name, new ObjectMapper().writeValueAsString(carrinho));
 			cookie.setHttpOnly(true);
+			cookie.setPath("/");
 			response.addCookie(cookie);
 		} catch (JsonProcessingException e) {
 			new RuntimeException();

@@ -2,6 +2,10 @@ package br.com.deveficiente.apicdc.controller;
 
 import java.math.BigDecimal;
 
+import javax.validation.constraints.Positive;
+
+import org.springframework.util.Assert;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import br.com.deveficiente.apicdc.model.Livro;
@@ -24,10 +28,15 @@ public class LivroCarrinhoDTO {
 		this.linkCapaLivro = livro.getLinkCapaLivro();
 	}
 	
+	public void atualizaQuantidade(@Positive int novaQuantidade) {
+		Assert.isTrue(novaQuantidade > 0, "A quantidade tem que ser maior que zero");
+		this.quantidade = novaQuantidade;
+	}
+	
 	public void incrementar() {
 		this.quantidade++;
 	}
-	
+
 	public String getLivro() {
 		return livro;
 	}
