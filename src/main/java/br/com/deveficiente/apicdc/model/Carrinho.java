@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -14,7 +15,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import br.com.deveficiente.apicdc.controller.ItemCompra;
 import br.com.deveficiente.apicdc.controller.LivroCarrinhoDTO;
+import br.com.deveficiente.apicdc.repository.LivroRepository;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Carrinho {
@@ -80,6 +83,12 @@ public class Carrinho {
 	@Override
 	public String toString() {
 		return "Carrinho [livros=" + livros + "]";
+	}
+
+	public Set<ItemCompra> gerarItensCompra(LivroRepository livroRepository) {
+		return this.livros.stream().map(itemCarrinho -> {
+			return itemCarrinho.novoItemCompra(livroRepository);
+		}).collect(Collectors.toSet());
 	}
 
 }

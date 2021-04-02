@@ -1,7 +1,11 @@
 package br.com.deveficiente.apicdc.controller;
 
+import java.util.Set;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+
+import org.springframework.util.StringUtils;
 
 public class DadosCompradorForm {
 
@@ -54,6 +58,16 @@ public class DadosCompradorForm {
 
 	public void setComplemento(String complemento) {
 		this.complemento = complemento;
+	}
+
+	public Compra novaCompra(Set<ItemCompra> itens) {
+		Compra compra = new Compra(this.email, this.documento, this.endereco, itens);
+		
+		if(StringUtils.hasText(complemento)) {
+			compra.setComplemento(complemento);
+		}
+		
+		return compra;
 	}
 
 }
