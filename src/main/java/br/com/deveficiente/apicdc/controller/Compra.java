@@ -9,26 +9,28 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Size;
 
+import org.springframework.util.Assert;
+
+import br.com.deveficiente.apicdc.model.Cupom;
+
 @Entity
 public class Compra {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
 	private @NotBlank @Email String email;
-	@CpfCnpj
-	private @NotBlank String documento;
+	private @CpfCnpj @NotBlank String documento;
 	private @NotBlank String endereco;
 	private String complemento;
-	@ElementCollection
-	private Set<ItemCompra> itens = new HashSet<>();
-	@PastOrPresent
-	private LocalDateTime createdAt = LocalDateTime.now();
+	private @ElementCollection Set<ItemCompra> itens = new HashSet<>();
+	private @PastOrPresent LocalDateTime createdAt = LocalDateTime.now();
+	@ManyToOne
+	private Cupom cupom;
 
 	public Compra(@NotBlank @Email String email, @NotBlank String documento, @NotBlank String endereco,
 			@Size(min = 1) Set<ItemCompra> itens) {
@@ -38,14 +40,20 @@ public class Compra {
 				this.itens.addAll(itens);
 	}
 
-	@Override
-	public String toString() {
-		return "Compra [email=" + email + ", documento=" + documento + ", endereco=" + endereco + ", itens=" + itens
-				+ ", createdAt=" + createdAt + "]";
-	}
-
 	public void setComplemento(String complemento) {
 		this.complemento = complemento;
 	}
 
+	public void setCupom(Cupom cupom) {
+		Assert.isTrue(cupom.taValido(), "Você passou um cupom inválido");
+		this.cupom = cupom;
+		
+	}
+
+	@Override
+	public String toString() {
+		return "Compra [id=" + id + ", email=" + email + ", documento=" + documento + ", endereco=" + endereco
+				+ ", complemento=" + complemento + ", itens=" + itens + ", createdAt=" + createdAt;
+	}
+	
 }

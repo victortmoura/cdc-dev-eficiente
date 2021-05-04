@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.deveficiente.apicdc.model.Carrinho;
+import br.com.deveficiente.apicdc.repository.CupomRepository;
 import br.com.deveficiente.apicdc.repository.LivroRepository;
 
 @RestController
@@ -25,13 +26,16 @@ public class ContinuaPagamentoController {
 	@PersistenceContext
 	private EntityManager manager;
 
+	@Autowired
+	private CupomRepository cupomRepository;
+
 	@PostMapping(value = "/api/carrinho/finaliza")
 	@Transactional
 	public String processa(@Valid DadosCompradorForm form, @CookieValue("carrinho") String jsonCarrinho) {
 		Carrinho carrinho = Carrinho.cria(Optional.of(jsonCarrinho));
 		Set<ItemCompra> itens = carrinho.gerarItensCompra(livroRepository);
 		
-		Compra novaCompra = form.novaCompra(itens);
+		Compra novaCompra = form.novaCompra(itens, cupomRepository);
 		
 		manager.persist(novaCompra);
 		
